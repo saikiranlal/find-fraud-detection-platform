@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gauge (Equal + Faded + Labels)</title>
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    background: rgb(23,45,67);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  }
+  .wrap{
+    width:300px;   /* change for sidebar: 220px, 260px, etc */
+    height:300px;
+    filter: drop-shadow(0 18px 35px rgba(0,0,0,.55));
+  }
+
+  /* ONLY needle rotates */
+  #needle{
+    transform-origin: 150px 150px; /* center of 300x300 viewBox */
+    animation: swing 2.2s ease-in-out infinite alternate;
+  }
+  @keyframes swing{
+    from { transform: rotate(0deg); }  /* left side */
+    to   { transform: rotate(360deg); }   /* right side */
+  }
+
+  .label{
+    fill: rgba(238, 235, 235, 0.945);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.35);
+  }
+</style>
+</head>
+<body>
+
+<!-- 
+  Style like your screenshot:
+  - Circle gauge
+  - 3 equal parts (120° each)
+  - Faded/gradient fill in each part
+  - Labels: GOOD / AVG / POOR
+  - Needle rotates (only needle)
+-->
+<svg class="wrap" viewBox="0 0 300 300" aria-label="Score Gauge">
+  <defs>
+    <!-- Background inner shading like your screenshot -->
+    <radialGradient id="bgShade" cx="50%" cy="45%" r="75%">
+      <stop offset="0%"  stop-color="rgba(255,255,255,0.10)"/>
+      <stop offset="60%" stop-color="rgba(255,255,255,0.03)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.22)"/>
+    </radialGradient>
+
+    <!-- Segment gradients (faded look) -->
+    <radialGradient id="gGreen" cx="35%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#B6FFD0"/>
+      <stop offset="55%" stop-color="#2CFF6A"/>
+      <stop offset="100%" stop-color="#11B64A"/>
+    </radialGradient>
+
+    <radialGradient id="gOrange" cx="50%" cy="75%" r="85%">
+      <stop offset="0%" stop-color="#FFE0B0"/>
+      <stop offset="55%" stop-color="#FFA52C"/>
+      <stop offset="100%" stop-color="#C87408"/>
+    </radialGradient>
+
+    <radialGradient id="gRed" cx="70%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#FFC0C0"/>
+      <stop offset="55%" stop-color="#FF3B3B"/>
+      <stop offset="100%" stop-color="#B31212"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer ring and base -->
+  <circle cx="150" cy="150" r="144" fill="rgba(255,255,255,0.04)"/>
+  <circle cx="150" cy="150" r="144" fill="url(#bgShade)"/>
+
+  <!-- 3 equal segments (120° each) -->
+  <!-- Key points for radius 130 around center (150,150):
+       Top: (150,20)
+       Bottom-right: (263,215)
+       Bottom-left: (37,215)
+  -->
+
+  <!-- GREEN (top-left / left) -->
+  <path d="M150 150 L150 20 A130 130 0 0 1 263 215 Z"
+        fill="url(#gGreen)" opacity="0.98"/>
+
+  <!-- RED (top-right) -->
+  <path d="M150 150 L263 215 A130 130 0 0 1 37 215 Z"
+        fill="url(#gRed)" opacity="0.98"/>
+
+  <!-- ORANGE (bottom) -->
+  <path d="M150 150 L37 215 A130 130 0 0 1 150 20 Z"
+        fill="url(#gOrange)" opacity="0.98"/>
+
+ 
+
+  <!-- Labels -->
+  <text class="label" x="60" y="100" transform="rotate(-28 108 80)">FAIR</text>
+  <text class="label" x="180" y="92" transform="rotate(29 180 92)">GOOD</text>
+  <text class="label" x="135" y="235">BAD</text>
+
+  <!-- NEEDLE (ONLY this rotates) -->
+  <g id="needle">
+    <!-- needle shadow -->
+    <path d="M150 38 L172 155 L150 182 L128 155 Z" fill="rgba(0,0,0,0.35)"/>
+    <!-- needle body (long: reaches near edge) -->
+    <path d="M150 34 L176 155 L150 186 L124 155 Z" fill="#0E0F12"/>
+    <!-- highlight -->
+    <path d="M150 48 L163 155 L150 171 L137 155 Z" fill="rgba(255,255,255,0.16)"/>
+  </g>
+
+ <!-- center hub -->
+  <circle cx="150" cy="150" r="20" fill="rgba(255,255,255,0.12)"/>
+  <circle cx="150" cy="150" r="12" fill="rgba(245,245,245,0.92)"/>
+
+</svg>
+
+</body>
+</html>

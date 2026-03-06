@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LETS FIND!! - Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#121a2b;
+      --card:rgba(255,255,255,0.08);
+      --border:rgba(255,255,255,0.14);
+      --text:#eaf0ff;
+      --muted:#b8c2d9;
+      --violet:#8b5cf6;
+      --green:#22c55e;
+      --red:#ef4444;
+      --amber:#f59e0b;
+      --shadow:0 20px 70px rgba(0,0,0,0.45);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(139,92,246,0.22), transparent 60%),
+        radial-gradient(900px 540px at 90% 30%, rgba(34,197,94,0.16), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:flex;
+      justify-content:center;
+      padding:22px 14px;
+    }
+
+    .page{ width:100%; max-width:1260px; }
+
+    .topbar{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:14px; margin-bottom:16px;
+    }
+    .brand h1{ margin:0; font-size:28px; font-weight:800; letter-spacing:.3px; }
+    .brand p{ margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted); font-size:12px; white-space:nowrap;
+    }
+
+    /* ===== Layout ===== */
+    .layout{
+      display:grid;
+      grid-template-columns: 320px 1.6fr 0.85fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 1120px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+      padding:16px;
+    }
+
+    .btn{
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:0.2px;
+      color:#0b1220;
+      background: linear-gradient(135deg, var(--violet), #a78bfa);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    .btn:active{ transform: translateY(0px); }
+    .btn.green{ background: linear-gradient(135deg, var(--green), #86efac); }
+    .btn.ghost{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.18);
+      color:var(--text);
+    }
+    .btn.small{
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .msg{
+      display:none;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+    }
+    .msg.err{
+      display:block;
+      border-color: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.14);
+      color:#ffe2e2;
+    }
+    .msg.ok{
+      display:block;
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.14);
+      color:#dcfce7;
+    }
+
+    /* ===== Dashboard ===== */
+    .dashTop{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .pfp{
+      width:54px; height:54px;
+      border-radius:16px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 55%),
+        linear-gradient(135deg, rgba(139,92,246,0.85), rgba(34,197,94,0.75));
+      border:1px solid rgba(255,255,255,0.18);
+      flex:0 0 54px;
+      position:relative;
+      overflow:hidden;
+    }
+    .pfp img{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:none;
+    }
+    .dashName{
+      margin:0;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.2;
+    }
+    .dashSub{
+      margin:3px 0 0;
+      font-size:12px;
+      color:var(--muted);
+      word-break: break-all;
+    }
+    .dashBtns{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .panel{
+      margin-top:12px;
+      display:none;
+      border-top:1px dashed rgba(255,255,255,0.18);
+      padding-top:12px;
+    }
+    .panel h3{
+      margin:0 0 10px 0;
+      font-size:13px;
+      font-weight:900;
+      color:rgba(233,238,255,0.95);
+    }
+    .field{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.16);
+      background:rgba(255,255,255,0.10);
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+      margin-top:10px;
+    }
+    .field:focus{
+      border-color: rgba(139,92,246,0.65);
+      box-shadow: 0 0 0 4px rgba(139,92,246,0.16);
+    }
+    .myList{ display:grid; gap:10px; }
+    .myItem{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.06);
+    }
+    .myItemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .myItemText{
+      font-size:12px;
+      line-height:1.4;
+      color:rgba(233,238,255,0.95);
+    }
+
+    /* ===== Search area ===== */
+    .searchRow{
+      display:flex; gap:12px; align-items:stretch;
+      margin-top:12px; flex-wrap:wrap;
+    }
+    .inputWrap{ flex:1 1 520px; position:relative; }
+    .input{
+      width:100%;
+      padding:14px 14px 14px 44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.16);
+      background:rgba(255,255,255,0.10);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      transition: 0.2s ease;
+    }
+    .input:focus{
+      border-color: rgba(139,92,246,0.65);
+      box-shadow: 0 0 0 4px rgba(139,92,246,0.18);
+    }
+    .icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:.85; }
+    .helper{ color:var(--muted); font-size:12px; margin-top:10px; line-height:1.4; }
+
+    /* Comments */
+    .results{ margin-top:16px; display:none; }
+    .resultsHeader{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; margin-bottom:10px; flex-wrap:wrap;
+    }
+    .resultsHeader h2{ margin:0; font-size:16px; font-weight:800; }
+    .commentList{ display:grid; grid-template-columns:1fr; gap:10px; }
+
+    .comment{
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:16px;
+      padding:12px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .avatar{
+      width:40px; height:40px; border-radius:12px; flex:0 0 40px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 55%),
+        linear-gradient(135deg, rgba(139,92,246,0.85), rgba(34,197,94,0.75));
+      border:1px solid rgba(255,255,255,0.18);
+    }
+    .meta{ display:flex; justify-content:space-between; gap:10px; align-items:center; width:100%; }
+    .nameBtn{
+      all:unset;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      color:var(--text);
+    }
+    .nameBtn:hover{ text-decoration: underline; }
+    .time{ color:var(--muted); font-size:11px; white-space:nowrap; }
+    .text{ margin:6px 0 0; color:#e9eeff; font-size:13px; line-height:1.45; opacity:0.95; }
+
+    .tagRow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:11px; color:var(--muted);
+      padding:5px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+    }
+    .tag.safe{ border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.10); }
+    .tag.warn{ border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.10); }
+    .tag.neutral{ border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.10); }
+
+    .replyBox{
+      margin-top:10px;
+      display:none;
+      gap:8px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .replyInput{
+      flex: 1 1 260px;
+      min-height:38px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.16);
+      background:rgba(255,255,255,0.10);
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+      resize:vertical;
+    }
+    .replies{
+      margin-top:10px;
+      display:grid;
+      gap:8px;
+      padding-left:52px;
+    }
+    .reply{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-size:12px;
+      color: rgba(233,238,255,0.95);
+    }
+    .replyMeta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+      color: var(--muted);
+      font-size:11px;
+    }
+
+    .addComment{
+      margin-top:14px;
+      border-top:1px dashed rgba(255,255,255,0.18);
+      padding-top:14px;
+      display:none;
+    }
+    .addRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      margin-top:10px;
+    }
+    .select{
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.16);
+      background:rgba(255,255,255,0.10);
+      color:var(--text);
+      outline:none;
+      font-weight:700;
+      font-size:13px;
+      min-width:160px;
+    }
+    .select option{ color:#111; }
+
+    .footerRow{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .rightBtns{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
+    /* Profile side panel (right) */
+    .profileCard{
+      position:sticky;
+      top:18px;
+      display:none;
+    }
+    .profileTop{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .bigAvatar{
+      width:54px; height:54px; border-radius:16px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 55%),
+        linear-gradient(135deg, rgba(139,92,246,0.85), rgba(34,197,94,0.75));
+      border:1px solid rgba(255,255,255,0.18);
+      flex:0 0 54px;
+    }
+    .profileName{
+      margin:0;
+      font-size:16px;
+      font-weight:900;
+    }
+    .profileSub{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .profileList{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .pItem{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.06);
+    }
+    .pItemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .myActions{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+    .pItemText{
+      margin:6px 0 0;
+      font-size:13px;
+      color:#e9eeff;
+      line-height:1.4;
+    }
+
+    /* F-Score panel */
+    .scorePanel{
+      margin-top:16px;
+      display:none;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:18px;
+      padding:14px;
+    }
+    .scoreTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .scoreTitle{ font-weight:900; font-size:14px; margin:0; }
+    .scoreValue{ font-weight:900; font-size:22px; }
+    .scoreSub{ color:var(--muted); font-size:12px; margin-top:6px; line-height:1.4; }
+
+    .gaugeWrap{ margin-top:12px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+    .gaugeBox{ width:240px; height:240px; filter: drop-shadow(0 18px 35px rgba(0,0,0,.55)); }
+    .miniStats{ flex:1 1 260px; display:grid; gap:10px; }
+    .statRow{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 12px; border-radius:14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.06);
+      font-size:13px;
+    }
+    .statRow b{ font-weight:900; }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <h1>LETS FIND!!</h1>
+        <p>Dashboard → Search → Comments → Reply → Profiles → F-Score</p>
+      </div>
+      <div class="pill">POOR 0–40 • AVG 41–80 • GOOD 81+</div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: DASHBOARD -->
+      <div class="card">
+        <div class="dashTop">
+          <div class="pfp">
+            <img id="pfpImg" alt="profile"/>
+          </div>
+          <div>
+            <p class="dashName" id="dashName">Dashboard</p>
+            <p class="dashSub" id="dashSub">Loading...</p>
+          </div>
+        </div>
+
+        <div class="dashBtns">
+          <button class="btn ghost" id="myCommentsBtn" type="button">My Comments</button>
+          <button class="btn ghost" id="settingsBtn" type="button">Settings</button>
+          <button class="btn green" id="signOutBtn" type="button">Sign Out</button>
+        </div>
+
+        <div class="panel" id="myCommentsPanel">
+          <h3>My Comments</h3>
+          <div class="myList" id="myList"></div>
+        </div>
+
+        <div class="panel" id="settingsPanel">
+          <h3>Settings</h3>
+          <input class="field" id="pfpUrl" type="text" placeholder="Profile Image URL (optional)"/>
+          <button class="btn small ghost" id="savePfpBtn" type="button">Save Picture</button>
+
+          <input class="field" id="newPwd" type="password" placeholder="Change password (demo)"/>
+          <button class="btn small" id="changePwdBtn" type="button">Update Password</button>
+        </div>
+      </div>
+
+      <!-- MIDDLE: SEARCH + COMMENTS -->
+      <div class="card">
+        <div style="font-weight:900; font-size:16px;">Check Number / Mail</div>
+
+        <div class="searchRow">
+          <div class="inputWrap">
+            <span class="icon">🔎</span>
+            <input id="query" class="input" type="text" placeholder="Enter phone (10 digits) or Gmail (name@gmail.com)" />
+          </div>
+          <button id="searchBtn" class="btn" type="button">Search</button>
+        </div>
+
+        <div class="helper">Phone must be <b>10 digits</b>. Gmail must end with <b>@gmail.com</b>.</div>
+
+        <div id="message" class="msg"></div>
+
+        <div id="results" class="results">
+          <div class="resultsHeader">
+            <h2>Comments for: <span id="searchedKey" style="opacity:.95;"></span></h2>
+            <div id="countPill" class="pill">0 results</div>
+          </div>
+
+          <div id="list" class="commentList"></div>
+
+          <!-- Add comment -->
+          <div id="addComment" class="addComment">
+            <div style="font-weight:900;">Add a comment (from your account)</div>
+
+            <div class="addRow">
+              <input id="newName" class="input" style="padding-left:14px; flex:1 1 220px;" type="text" disabled />
+              <select id="newType" class="select">
+                <option value="safe">✅ Safe</option>
+                <option value="neutral">➖ Neutral</option>
+                <option value="warn">⚠️ Warning</option>
+              </select>
+            </div>
+
+            <div class="addRow">
+              <textarea id="newText" class="replyInput" style="min-height:46px; width:100%;" placeholder="Write your comment..."></textarea>
+              <button id="postBtn" class="btn green" type="button">Post</button>
+            </div>
+          </div>
+
+          <div class="footerRow">
+            <button id="clearBtn" class="btn ghost" type="button">Clear</button>
+            <div class="rightBtns">
+              <button id="toggleAddBtn" class="btn ghost" type="button">Add Comment</button>
+              <button id="fScoreBtn" class="btn green" type="button">F-Score</button>
+            </div>
+          </div>
+
+          <!-- F-Score -->
+          <div id="scorePanel" class="scorePanel">
+            <div class="scoreTop">
+              <div>
+                <p class="scoreTitle">F-Score Result</p>
+                <div class="scoreSub" id="scoreExplain">Based on Safe / Neutral / Warning comments.</div>
+              </div>
+              <div class="scoreValue"><span id="scoreNum">--</span><span style="opacity:.8">/100</span></div>
+            </div>
+
+            <div class="gaugeWrap">
+              <svg class="gaugeBox" viewBox="0 0 300 300" aria-label="F-Score Gauge">
+                <defs>
+                  <radialGradient id="bgShade" cx="50%" cy="45%" r="75%">
+                    <stop offset="0%"  stop-color="rgba(255,255,255,0.10)"/>
+                    <stop offset="60%" stop-color="rgba(255,255,255,0.03)"/>
+                    <stop offset="100%" stop-color="rgba(0,0,0,0.22)"/>
+                  </radialGradient>
+
+                  <radialGradient id="gGreen" cx="30%" cy="35%" r="85%">
+                    <stop offset="0%" stop-color="#B6FFD0"/>
+                    <stop offset="55%" stop-color="#22c55e"/>
+                    <stop offset="100%" stop-color="#128a3d"/>
+                  </radialGradient>
+                  <radialGradient id="gOrange" cx="50%" cy="78%" r="90%">
+                    <stop offset="0%" stop-color="#FFE0B0"/>
+                    <stop offset="55%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#b45309"/>
+                  </radialGradient>
+                  <radialGradient id="gRed" cx="72%" cy="35%" r="85%">
+                    <stop offset="0%" stop-color="#FFC0C0"/>
+                    <stop offset="55%" stop-color="#ef4444"/>
+                    <stop offset="100%" stop-color="#991b1b"/>
+                  </radialGradient>
+                </defs>
+
+                <circle cx="150" cy="150" r="144" fill="rgba(255,255,255,0.04)"/>
+                <circle cx="150" cy="150" r="144" fill="url(#bgShade)"/>
+
+                <!-- RIGHT = POOR -->
+                <path d="M150 150 L150 20 A130 130 0 0 1 263 215 Z" fill="url(#gRed)" opacity="0.98"/>
+                <!-- BOTTOM = AVG -->
+                <path d="M150 150 L263 215 A130 130 0 0 1 37 215 Z" fill="url(#gOrange)" opacity="0.98"/>
+                <!-- LEFT = GOOD -->
+                <path d="M150 150 L37 215 A130 130 0 0 1 150 20 Z" fill="url(#gGreen)" opacity="0.98"/>
+
+                <line x1="150" y1="150" x2="150" y2="20"  stroke="rgba(255,255,255,0.75)" stroke-width="5"/>
+                <line x1="150" y1="150" x2="263" y2="215" stroke="rgba(255,255,255,0.75)" stroke-width="5"/>
+                <line x1="150" y1="150" x2="37"  y2="215" stroke="rgba(255,255,255,0.75)" stroke-width="5"/>
+
+                <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="4"/>
+
+                <text x="206" y="96" fill="rgba(255,255,255,0.92)" font-weight="900" font-size="18" transform="rotate(28 206 96)">POOR</text>
+                <text x="136" y="238" fill="rgba(255,255,255,0.92)" font-weight="900" font-size="18">AVG</text>
+                <text x="102" y="90" fill="rgba(255,255,255,0.92)" font-weight="900" font-size="18" transform="rotate(-28 102 90)">GOOD</text>
+
+                <!-- Needle -->
+                <g id="needle">
+                  <path d="M150 38 L172 155 L150 182 L128 155 Z" fill="rgba(0,0,0,0.35)"/>
+                  <path d="M150 34 L176 155 L150 186 L124 155 Z" fill="#0E0F12"/>
+                  <path d="M150 48 L163 155 L150 171 L137 155 Z" fill="rgba(255,255,255,0.16)"/>
+                </g>
+
+                <circle cx="150" cy="150" r="20" fill="rgba(255,255,255,0.12)"/>
+                <circle cx="150" cy="150" r="12" fill="rgba(245,245,245,0.92)"/>
+              </svg>
+
+              <div class="miniStats">
+                <div class="statRow"><span>Safe</span><b id="safeCount">0</b></div>
+                <div class="statRow"><span>Neutral</span><b id="neutralCount">0</b></div>
+                <div class="statRow"><span>Warning</span><b id="warnCount">0</b></div>
+                <div class="statRow"><span>Label</span><b id="finalLabel">--</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: PROFILE PANEL -->
+      <div id="profileCard" class="card profileCard">
+        <div class="profileTop">
+          <div class="bigAvatar"></div>
+          <div>
+            <p id="profileName" class="profileName">User</p>
+            <p id="profileSub" class="profileSub">Community profile</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-weight:900;">User comments</div>
+          <button id="closeProfile" class="btn ghost small" type="button">Close</button>
+        </div>
+
+        <div id="profileList" class="profileList"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---------- Elements ----------
+  const q = document.getElementById("query");
+  const searchBtn = document.getElementById("searchBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const msg = document.getElementById("message");
+  const results = document.getElementById("results");
+  const listEl = document.getElementById("list");
+  const countPill = document.getElementById("countPill");
+  const searchedKey = document.getElementById("searchedKey");
+
+  const toggleAddBtn = document.getElementById("toggleAddBtn");
+  const addCommentBox = document.getElementById("addComment");
+  const postBtn = document.getElementById("postBtn");
+  const newName = document.getElementById("newName");
+  const newType = document.getElementById("newType");
+  const newText = document.getElementById("newText");
+
+  const fScoreBtn = document.getElementById("fScoreBtn");
+  const scorePanel = document.getElementById("scorePanel");
+  const scoreNum = document.getElementById("scoreNum");
+  const scoreExplain = document.getElementById("scoreExplain");
+  const safeCountEl = document.getElementById("safeCount");
+  const neutralCountEl = document.getElementById("neutralCount");
+  const warnCountEl = document.getElementById("warnCount");
+  const finalLabelEl = document.getElementById("finalLabel");
+  const needleEl = document.getElementById("needle");
+
+  const profileCard = document.getElementById("profileCard");
+  const profileNameEl = document.getElementById("profileName");
+  const profileSubEl = document.getElementById("profileSub");
+  const profileList = document.getElementById("profileList");
+  const closeProfile = document.getElementById("closeProfile");
+
+  // Dashboard
+  const dashName = document.getElementById("dashName");
+  const dashSub  = document.getElementById("dashSub");
+  const myCommentsBtn = document.getElementById("myCommentsBtn");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const signOutBtn = document.getElementById("signOutBtn");
+
+  const myCommentsPanel = document.getElementById("myCommentsPanel");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const myList = document.getElementById("myList");
+
+  const pfpImg = document.getElementById("pfpImg");
+  const pfpUrl = document.getElementById("pfpUrl");
+  const savePfpBtn = document.getElementById("savePfpBtn");
+  const newPwd = document.getElementById("newPwd");
+  const changePwdBtn = document.getElementById("changePwdBtn");
+
+  // ---------- Helpers ----------
+  function showMsg(text, type){
+    msg.className = "msg " + type;
+    msg.textContent = text;
+    msg.style.display = "block";
+  }
+  function hideMsg(){
+    msg.style.display = "none";
+    msg.textContent = "";
+    msg.className = "msg";
+  }
+  function validPhone(v){ return /^[0-9]{10}$/.test(v); }
+  function validGmail(v){ return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(v); }
+
+  function tagEmoji(type){
+    if(type === "safe") return "✅";
+    if(type === "warn") return "⚠️";
+    return "➖";
+  }
+  function tagText(type){
+    if(type === "safe") return "Safe";
+    if(type === "warn") return "Warning";
+    return "Neutral";
+  }
+  function tagClass(type){
+    if(type === "safe") return "safe";
+    if(type === "warn") return "warn";
+    return "neutral";
+  }
+  function timeNow(){
+    const d = new Date();
+    return d.toLocaleString([], {month:"short", day:"2-digit"}) + " • " +
+           d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  }
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+  function loadJSON(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      return JSON.parse(raw);
+    }catch(_e){
+      return fallback;
+    }
+  }
+  function saveJSON(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  // ---------- Auth (must be logged in) ----------
+  const currentUser = localStorage.getItem("LF_current_user") || "";
+  const currentUserId = localStorage.getItem("LF_current_userId") || "";
+
+  if(!currentUser || !currentUserId){
+    // force proper login/signup so data won't mix
+    window.location.href = "Sign_Page.html";
+  }
+
+  dashName.textContent = "Dashboard";
+  dashSub.textContent  = "Logged in as: " + currentUser;
+  newName.value = currentUser;
+
+  // ---------- Seed Users + Comments ----------
+  const seedUsers = {
+    u1: {name:"Akhil", bio:"Verified community member"},
+    u2: {name:"Rohit", bio:"Regular contributor"},
+    u3: {name:"Sneha", bio:"Spam reporter"},
+    u4: {name:"Irfan", bio:"Helpful reviewer"},
+    u5: {name:"Meera", bio:"Community reporter"},
+  };
+  const seedComments = [
+    {id:1000, key:"9999999999", userId:"u1", name:"Akhil", time:"2m ago", type:"safe", text:"Looks safe. No spam activity noticed.", tag:"Verified user", replies:[
+      {by:"Admin", time:"1m ago", text:"Thanks for reporting 👍"}
+    ]},
+    {id:1001, key:"9999999999", userId:"u2", name:"Rohit", time:"10m ago", type:"neutral", text:"Got calls, sounded like promotion. Not sure.", tag:"Community", replies:[]},
+    {id:1002, key:"9999999999", userId:"u3", name:"Sneha", time:"1h ago", type:"warn", text:"Asked OTP. Please ignore.", tag:"Spam warning", replies:[
+      {by:"Meera", time:"55m ago", text:"Same! I also got OTP request."}
+    ]},
+    {id:1003, key:"test@gmail.com", userId:"u4", name:"Irfan", time:"3h ago", type:"neutral", text:"Mail seems okay, but verify details carefully.", tag:"Advice", replies:[]},
+    {id:1004, key:"test@gmail.com", userId:"u5", name:"Meera", time:"Yesterday", type:"warn", text:"Repeated contact. Blocked it.", tag:"Report", replies:[]},
+    {id:1005, key:"test@gmail.com", userId:"u1", name:"Akhil", time:"2d ago", type:"safe", text:"No issues from my side.", tag:"Positive", replies:[]},
+  ];
+
+  let users = loadJSON("LF_usersDB", seedUsers);
+  users[currentUserId] = users[currentUserId] || {name: currentUser, bio:"Signed-up user"};
+  saveJSON("LF_usersDB", users);
+
+  let commentsDB = loadJSON("LF_commentsDB", seedComments);
+  let cid = loadJSON("LF_cid", 2000);
+
+  // ---------- Dashboard: Panels ----------
+  function togglePanel(panel){
+    const isOpen = panel.style.display === "block";
+    myCommentsPanel.style.display = "none";
+    settingsPanel.style.display = "none";
+    panel.style.display = isOpen ? "none" : "block";
+  }
+
+  myCommentsBtn.addEventListener("click", ()=>{
+    togglePanel(myCommentsPanel);
+    renderMyComments();
+  });
+
+  settingsBtn.addEventListener("click", ()=>{
+    togglePanel(settingsPanel);
+  });
+
+  signOutBtn.addEventListener("click", ()=>{
+    localStorage.removeItem("LF_current_user");
+    localStorage.removeItem("LF_current_userId");
+    window.location.href = "Sign_Page.html";
+  });
+
+  // ---------- Profile Pic ----------
+  function loadProfilePic(){
+    const key = "LF_pfp_" + currentUserId;
+    const url = localStorage.getItem(key);
+    if(url){
+      pfpUrl.value = url;
+      pfpImg.src = url;
+      pfpImg.style.display = "block";
+    }else{
+      pfpImg.style.display = "none";
+    }
+  }
+  loadProfilePic();
+
+  savePfpBtn.addEventListener("click", ()=>{
+    const url = pfpUrl.value.trim();
+    const key = "LF_pfp_" + currentUserId;
+    if(!url){
+      localStorage.removeItem(key);
+      loadProfilePic();
+      alert("Profile picture cleared.");
+      return;
+    }
+    localStorage.setItem(key, url);
+    loadProfilePic();
+    alert("Profile picture saved.");
+  });
+
+  // ---------- Change password (demo) ----------
+  changePwdBtn.addEventListener("click", ()=>{
+    const np = newPwd.value.trim();
+    if(np.length < 6){
+      alert("Enter at least 6 characters (demo).");
+      return;
+    }
+    localStorage.setItem("LF_pwd_" + currentUserId, np);
+    newPwd.value = "";
+    alert("Password updated (demo).");
+  });
+
+  // ---------- My comments list ----------
+  function renderMyComments(){
+  const mine = commentsDB.filter(c => c.userId === currentUserId);
+
+  if(mine.length === 0){
+    myList.innerHTML = `<div class="msg err" style="display:block;">You haven’t posted any comments yet.</div>`;
+    return;
+  }
+
+  myList.innerHTML = mine.slice(0,30).map(c => `
+    <div class="myItem">
+      <div class="myItemTop">
+        <span>${tagEmoji(c.type)} ${tagText(c.type)}</span>
+        <span>${escapeHtml(c.time)}</span>
+      </div>
+
+      <div class="myItemText">
+        <b>On:</b> ${escapeHtml(c.key)}<br>${escapeHtml(c.text)}
+      </div>
+
+      <div class="myActions">
+        <button class="btn ghost small myViewBtn" data-key="${escapeHtml(c.key)}" type="button">View</button>
+        <button class="btn ghost small myDelBtn" data-cid="${c.id}" type="button">Delete</button>
+      </div>
+    </div>
+  `).join("");
+
+  // View: open the searched number + show comments
+  myList.querySelectorAll(".myViewBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const key = btn.dataset.key;
+      q.value = key;
+      doSearch();                  // uses your existing search function
+      myCommentsPanel.style.display = "none"; // optional: close panel
+    });
+  });
+
+  // Delete: only your own comments (already enforced inside deleteComment)
+  myList.querySelectorAll(".myDelBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      deleteComment(Number(btn.dataset.cid));
+      // refresh list after delete
+      renderMyComments();
+    });
+  });
+}
+
+
+  // ---------- Delete (ONLY owner) ----------
+  let currentKey = "";
+
+  function deleteComment(commentId){
+    const idx = commentsDB.findIndex(c => c.id === commentId);
+    if(idx === -1) return;
+
+    if(commentsDB[idx].userId !== currentUserId){
+      showMsg("You can delete only your own comment.", "err");
+      return;
+    }
+
+    if(!confirm("Delete your comment?")) return;
+
+    commentsDB.splice(idx, 1);
+    saveJSON("LF_commentsDB", commentsDB);
+    showMsg("✅ Comment deleted.", "ok");
+
+    if(currentKey) renderComments(currentKey);
+    if(myCommentsPanel.style.display === "block") renderMyComments();
+  }
+
+  // ---------- Search + Comments ----------
+  function getCommentsForKey(key){
+    return commentsDB.filter(c => c.key === key);
+  }
+
+  function renderReplies(replies){
+    if(!replies || replies.length === 0) return "";
+    return `
+      <div class="replies">
+        ${replies.map(r => `
+          <div class="reply">
+            <div class="replyMeta">
+              <span><b>${escapeHtml(r.by)}</b></span>
+              <span>${escapeHtml(r.time)}</span>
+            </div>
+            <div>${escapeHtml(r.text)}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function addReply(commentId, by, text){
+    const item = commentsDB.find(c => c.id === commentId);
+    if(!item) return;
+    item.replies = item.replies || [];
+    item.replies.push({by, time: timeNow(), text});
+    saveJSON("LF_commentsDB", commentsDB);
+  }
+
+  function openProfile(userId){
+    const u = users[userId];
+    if(!u) return;
+
+    profileNameEl.textContent = u.name;
+    profileSubEl.textContent = u.bio || "Community profile";
+
+    const items = commentsDB.filter(c => c.userId === userId);
+
+    profileList.innerHTML = items.map(c => `
+      <div class="pItem">
+        <div class="pItemTop">
+          <span>${tagEmoji(c.type)} ${tagText(c.type)}</span>
+          <span>${escapeHtml(c.time)}</span>
+        </div>
+        <div class="pItemText"><b>On:</b> ${escapeHtml(c.key)}<br>${escapeHtml(c.text)}</div>
+      </div>
+    `).join("");
+
+    profileCard.style.display = "block";
+    profileCard.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+  closeProfile.addEventListener("click", ()=>{ profileCard.style.display = "none"; });
+
+  function renderComments(key){
+    const items = getCommentsForKey(key);
+    listEl.innerHTML = "";
+    countPill.textContent = items.length + " results";
+
+    if(items.length === 0){
+      listEl.innerHTML = `<div class="msg err" style="display:block;">No comments found yet. Be the first to add one.</div>`;
+      return;
+    }
+
+    items.forEach(c=>{
+      const row = document.createElement("div");
+      row.className = "comment";
+
+      const canDelete = (c.userId === currentUserId);
+
+      row.innerHTML = `
+        <div class="avatar"></div>
+        <div style="width:100%;">
+          <div class="meta">
+            <button class="nameBtn" data-user="${c.userId}" type="button">${escapeHtml(c.name)}</button>
+            <div class="time">${escapeHtml(c.time)}</div>
+          </div>
+
+          <p class="text">${escapeHtml(c.text)}</p>
+
+          <div class="tagRow">
+            <div class="tag ${tagClass(c.type)}">${tagEmoji(c.type)} ${tagText(c.type)}</div>
+            <div class="tag">💬 ${escapeHtml(c.tag || "Community")}</div>
+
+            <button class="btn ghost small replyToggle" data-cid="${c.id}" type="button">Reply</button>
+
+            ${canDelete ? `<button class="btn ghost small delBtn" data-cid="${c.id}" type="button">Delete</button>` : ``}
+          </div>
+
+          <div class="replyBox" id="replyBox-${c.id}">
+            <textarea class="replyInput" id="replyText-${c.id}" placeholder="Write a reply..."></textarea>
+            <button class="btn small postReplyBtn" data-cid="${c.id}" type="button">Post Reply</button>
+          </div>
+
+          ${renderReplies(c.replies)}
+        </div>
+      `;
+      listEl.appendChild(row);
+    });
+
+    // profile open
+    listEl.querySelectorAll(".nameBtn").forEach(btn=>{
+      btn.addEventListener("click", ()=> openProfile(btn.dataset.user));
+    });
+
+    // reply toggle
+    listEl.querySelectorAll(".replyToggle").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const cidLocal = btn.dataset.cid;
+        const box = document.getElementById("replyBox-" + cidLocal);
+        box.style.display = (box.style.display === "flex") ? "none" : "flex";
+      });
+    });
+
+    // post reply
+    listEl.querySelectorAll(".postReplyBtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const cidLocal = Number(btn.dataset.cid);
+        const t = document.getElementById("replyText-" + cidLocal);
+        const txt = (t.value || "").trim();
+        if(!txt){
+          showMsg("Please type a reply.", "err");
+          return;
+        }
+        addReply(cidLocal, currentUser, txt);
+        t.value = "";
+        showMsg("✅ Reply added.", "ok");
+        renderComments(currentKey);
+      });
+    });
+
+    // delete (only visible for owner)
+    listEl.querySelectorAll(".delBtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        deleteComment(Number(btn.dataset.cid));
+      });
+    });
+  }
+
+  function doSearch(){
+    const value = q.value.trim();
+    hideMsg();
+    scorePanel.style.display = "none";
+    profileCard.style.display = "none";
+
+    if(!(validPhone(value) || validGmail(value))){
+      results.style.display = "none";
+      addCommentBox.style.display = "none";
+      showMsg("Enter valid 10-digit phone OR name@gmail.com", "err");
+      return;
+    }
+
+    currentKey = value;
+    searchedKey.textContent = value;
+    results.style.display = "block";
+    addCommentBox.style.display = "block";
+    showMsg("✅ Showing comments for: " + value, "ok");
+    renderComments(value);
+  }
+
+  searchBtn.addEventListener("click", doSearch);
+  q.addEventListener("keydown", (e)=>{ if(e.key === "Enter") doSearch(); });
+
+  clearBtn.addEventListener("click", ()=>{
+    q.value = "";
+    results.style.display = "none";
+    scorePanel.style.display = "none";
+    addCommentBox.style.display = "none";
+    profileCard.style.display = "none";
+    hideMsg();
+    currentKey = "";
+    searchedKey.textContent = "";
+    q.focus();
+  });
+
+  toggleAddBtn.addEventListener("click", ()=>{
+    if(addCommentBox.style.display === "block"){
+      addCommentBox.style.display = "none";
+      toggleAddBtn.textContent = "Add Comment";
+    }else{
+      addCommentBox.style.display = "block";
+      toggleAddBtn.textContent = "Hide Add";
+      newText.focus();
+    }
+  });
+
+  // post comment
+  postBtn.addEventListener("click", ()=>{
+    if(!currentKey){
+      showMsg("Search a number/mail first.", "err");
+      return;
+    }
+
+    const type = newType.value;
+    const text = (newText.value || "").trim();
+    if(!text){
+      showMsg("Please write your comment.", "err");
+      return;
+    }
+
+    users = loadJSON("LF_usersDB", seedUsers);
+    users[currentUserId] = users[currentUserId] || {name: currentUser, bio:"Signed-up user"};
+    saveJSON("LF_usersDB", users);
+
+    commentsDB.unshift({
+      id: cid++,
+      key: currentKey,
+      userId: currentUserId,
+      name: currentUser,
+      time: timeNow(),
+      type,
+      text,
+      tag: "Community",
+      replies: []
+    });
+
+    saveJSON("LF_commentsDB", commentsDB);
+    saveJSON("LF_cid", cid);
+
+    newText.value = "";
+    showMsg("✅ Comment posted from: " + currentUser, "ok");
+    renderComments(currentKey);
+
+    if(myCommentsPanel.style.display === "block") renderMyComments();
+  });
+
+  // ---------- F-Score (YOUR RULES) ----------
+  function computeScore(items){
+    let safe=0, neutral=0, warn=0;
+    for(const c of items){
+      if(c.type === "safe") safe++;
+      else if(c.type === "warn") warn++;
+      else neutral++;
+    }
+    const n = items.length || 1;
+
+    // weighted score
+    let score = Math.round(((safe*90) + (neutral*55) + (warn*15)) / n);
+    score = Math.max(0, Math.min(100, score));
+
+    // ✅ your thresholds
+    let label = "AVG";
+    if(score <= 40) label = "POOR";
+    else if(score <= 80) label = "AVG";
+    else label = "GOOD";
+
+    return {score, safe, neutral, warn, label};
+  }
+
+  // ✅ Correct needle direction: POOR(right 330°) -> AVG(bottom 90°) -> GOOD(left 210°)
+  function scoreToAngle(score){
+    const start = 330;        // poor
+    const end   = 210 + 360;  // good via clockwise wrap
+    const a = start + (end - start) * (score / 100); // 330 -> 570
+    return a % 360;
+  }
+  function setNeedleAngle(deg){
+    needleEl.setAttribute("transform", `rotate(${deg} 150 150)`);
+  }
+
+  fScoreBtn.addEventListener("click", ()=>{
+    if(!currentKey){
+      showMsg("Search a number/mail first.", "err");
+      return;
+    }
+    const items = getCommentsForKey(currentKey);
+    if(items.length === 0){
+      showMsg("No comments yet — add comments to get a score.", "err");
+      return;
+    }
+
+    const r = computeScore(items);
+
+    scoreNum.textContent = r.score;
+    safeCountEl.textContent = r.safe;
+    neutralCountEl.textContent = r.neutral;
+    warnCountEl.textContent = r.warn;
+    finalLabelEl.textContent = r.label;
+
+    scoreExplain.textContent =
+      r.label==="GOOD" ? "Mostly safe comments — score is high (green)." :
+      r.label==="POOR" ? "Many warnings — score is low (red)." :
+      "Mixed comments — score is average (orange).";
+
+    setNeedleAngle(scoreToAngle(r.score));
+
+    scorePanel.style.display = "block";
+    scorePanel.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+
+  // Init defaults
+  addCommentBox.style.display = "none";
+  setNeedleAngle(scoreToAngle(55));
+</script>
+
+</body>
+</html>

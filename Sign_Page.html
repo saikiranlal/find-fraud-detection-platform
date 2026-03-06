@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LETS FIND!! - Sign Up</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins,sans-serif;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0f172a,#1f2937,#0b1020);
+}
+
+.wrapper{width:100%;max-width:420px;}
+
+.title{
+  text-align:center;
+  color:#f8fafc;
+  font-size:32px;
+  font-weight:800;
+  margin-bottom:15px;
+}
+
+.card{
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter:blur(12px);
+  border-radius:20px;
+  padding:50px;
+  box-shadow:0 18px 60px rgba(0,0,0,0.35);
+}
+
+label{
+  color:#e2e8f0;
+  font-size:13px;
+  font-weight:600;
+  margin-top:12px;
+  display:block;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.12);
+  color:white;
+  outline:none;
+}
+
+input:focus{
+  border-color:#6366f1;
+  box-shadow:0 0 0 4px rgba(99,102,241,0.25);
+}
+
+.msg{
+  margin-top:12px;
+  padding:10px;
+  border-radius:12px;
+  display:none;
+  font-size:13px;
+}
+
+.msg.ok{background:rgba(34,197,94,0.18);color:#dcfce7;}
+.msg.err{background:rgba(239,68,68,0.18);color:#fee2e2;}
+
+.btn{
+  width:100%;
+  margin-top:18px;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:#22c55e;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.pwd-wrap{position:relative;}
+
+.toggle{
+  position:absolute;
+  right:0px;
+  top:13px;
+  padding:5px 10px;
+  border-radius:8px;
+  border:none;
+  background:#334155;
+  color:white;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.hint{
+  margin-top:8px;
+  text-align:center;
+  color:#cbd5f5;
+  font-size:12px;
+}
+
+/* --- Save Password modal --- */
+.modalBack{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:999;
+}
+.modal{
+  width:min(420px, 92vw);
+  background:rgba(15,23,42,0.85);
+  border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(14px);
+  border-radius:18px;
+  box-shadow:0 22px 70px rgba(0,0,0,0.55);
+  padding:18px;
+  color:#f8fafc;
+}
+.modal h4{
+  margin:0 0 6px 0;
+  font-size:16px;
+  font-weight:800;
+}
+.modal p{
+  margin:0;
+  color:#cbd5f5;
+  font-size:13px;
+  line-height:1.4;
+}
+.modalActions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.mbtn{
+  flex:1;
+  padding:11px 12px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:800;
+}
+.mbtn.no{
+  background:rgba(255,255,255,0.10);
+  color:#f8fafc;
+  border:1px solid rgba(255,255,255,0.16);
+}
+.mbtn.yes{
+  background:#22c55e;
+  color:#0b1020;
+}
+.smallNote{
+  margin-top:10px;
+  font-size:12px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="title">LETS FIND!!</div>
+
+  <div class="card">
+    <h3 style="color:white;margin-top:0;">Sign Up</h3>
+
+    <label>Phone Number OR Gmail</label>
+    <input id="userInput" type="text" placeholder="Enter phone or gmail" autocomplete="username">
+
+    <label>Password</label>
+    <div class="pwd-wrap">
+      <input id="password" type="password" placeholder="Enter password" autocomplete="new-password">
+      <button id="togglePwd" class="toggle" type="button">Show</button>
+    </div>
+
+    <div id="message" class="msg"></div>
+
+    <button id="signupBtn" class="btn" type="button">Sign Up</button>
+
+    <div class="hint">
+      Phone = 10 digits • Gmail must end with @gmail.com<br>
+      Password = 8+ chars (letter + number + symbol)
+    </div>
+  </div>
+</div>
+
+<!-- Save Password Modal -->
+<div id="saveModal" class="modalBack" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+  <div class="modal">
+    <h4 id="saveTitle">Save password?</h4>
+    <p>Do you want to save this login on this device</p>
+    <div class="modalActions">
+      <button id="noSave" class="mbtn no" type="button">No</button>
+      <button id="yesSave" class="mbtn yes" type="button">Save</button>
+    </div>
+    <div class="smallNote">
+      Note: This is a demo “save” using browser storage. For real apps, use secure backend auth.
+    </div>
+  </div>
+</div>
+
+<script>
+const input = document.getElementById("userInput");
+const password = document.getElementById("password");
+const msg = document.getElementById("message");
+const toggle = document.getElementById("togglePwd");
+
+const saveModal = document.getElementById("saveModal");
+const yesSave = document.getElementById("yesSave");
+const noSave  = document.getElementById("noSave");
+
+function showMsg(text,type){
+  msg.style.display="block";
+  msg.className="msg "+type;
+  msg.textContent=text;
+}
+function hideMsg(){
+  msg.style.display="none";
+  msg.className="msg";
+  msg.textContent="";
+}
+
+/* SHOW PASSWORD */
+toggle.addEventListener("click",()=>{
+  password.type = password.type==="password" ? "text" : "password";
+  toggle.textContent = password.type==="password" ? "Show" : "Hide";
+});
+
+/* VALIDATIONS */
+function validPhone(p){ return /^[0-9]{10}$/.test(p); }
+function validGmail(g){ return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(g); }
+function validPassword(p){ return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(p); }
+
+/* ✅ Unique UserId from identifier (567 and 777 will be different) */
+function makeUserId(identifier){
+  const normalized = identifier.toLowerCase().trim();
+  return "u_" + btoa(unescape(encodeURIComponent(normalized)))
+    .replaceAll("=", "")
+    .replaceAll("+", "")
+    .replaceAll("/", "");
+}
+
+/* Modal helpers */
+function openModal(){ saveModal.style.display="flex"; }
+function closeModal(){ saveModal.style.display="none"; }
+
+/* Redirect helper */
+function goNext(){
+  setTimeout(()=>{ window.location.href="Login_Success.html"; }, 700);
+}
+
+/* --- Optional: auto-fill last saved login --- */
+(function autoFillSaved(){
+  const lastId = localStorage.getItem("LF_last_saved_userId");
+  if(!lastId) return;
+  const accounts = JSON.parse(localStorage.getItem("LF_accounts") || "{}");
+  if(accounts[lastId] && accounts[lastId].identifier){
+    input.value = accounts[lastId].identifier;
+    if(accounts[lastId].password){
+      password.value = accounts[lastId].password;
+    }
+  }
+})();
+
+/* SIGNUP CLICK */
+document.getElementById("signupBtn").addEventListener("click",()=>{
+  hideMsg();
+
+  const value = input.value.trim();
+  const pwd = password.value;
+
+  if(!(validPhone(value) || validGmail(value))){
+    showMsg("Enter valid 10-digit phone OR gmail@gmail.com","err");
+    return;
+  }
+  if(!validPassword(pwd)){
+    showMsg("Password must contain 8+ chars with letter, number & symbol","err");
+    return;
+  }
+
+  // ✅ Validation success → ask "Save password?"
+  openModal();
+});
+
+/* ✅ Save (per-user, not global) */
+yesSave.addEventListener("click", ()=>{
+  const value = input.value.trim();
+  const pwd = password.value;
+
+  const userId = makeUserId(value);
+
+  // ✅ Set current session (this fixes comment mixing)
+  localStorage.setItem("LF_current_user", value);
+  localStorage.setItem("LF_current_userId", userId);
+
+  // ✅ Save account (demo)
+  const accounts = JSON.parse(localStorage.getItem("LF_accounts") || "{}");
+  accounts[userId] = { identifier: value, password: pwd };
+  localStorage.setItem("LF_accounts", JSON.stringify(accounts));
+
+  // remember which one was saved last
+  localStorage.setItem("LF_last_saved_userId", userId);
+
+  closeModal();
+  showMsg("✅ Signup successful! Saved on this device. Redirecting...","ok");
+  goNext();
+});
+
+/* ✅ No save: still create account session, just don't store password */
+noSave.addEventListener("click", ()=>{
+  const value = input.value.trim();
+  const pwd = password.value;
+
+  const userId = makeUserId(value);
+
+  // ✅ Set current session (this fixes comment mixing)
+  localStorage.setItem("LF_current_user", value);
+  localStorage.setItem("LF_current_userId", userId);
+
+  // save identifier only (optional)
+  const accounts = JSON.parse(localStorage.getItem("LF_accounts") || "{}");
+  accounts[userId] = { identifier: value }; // no password
+  localStorage.setItem("LF_accounts", JSON.stringify(accounts));
+
+  closeModal();
+  showMsg("✅ Signup successful! Redirecting...","ok");
+  goNext();
+});
+
+/* Close modal by clicking outside */
+saveModal.addEventListener("click", (e)=>{
+  if(e.target === saveModal) closeModal();
+});
+</script>
+
+</body>
+</html>
